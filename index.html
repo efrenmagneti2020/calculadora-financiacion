@@ -6,77 +6,214 @@
     <meta name="theme-color" content="#121212">
     <title>Calculadora de Financiación</title>
     <link rel="manifest" href="manifest.webmanifest">
-    <script src="https://cdn.jsdelivr.com/npm/@tailwindcss/browser@4"></script>
     <style>
-        body { background-color: #121212; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px;
+        }
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background-color: #1e1e1e;
+            border: 1px solid #2d2d2d;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+        .grupo {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #a1a1aa;
+            margin-bottom: 6px;
+        }
+        .frecuencia-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-freq {
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 12px;
+            border: 1px solid #3f3f46;
+            background-color: #27272a;
+            color: #d4d4d8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-freq.active {
+            background-color: #facc15;
+            color: #000000;
+            border-color: #facc15;
+            box-shadow: 0 4px 12px rgba(250,204,21,0.3);
+        }
+        .input-box {
+            display: flex;
+            align-items: center;
+            background-color: #27272a;
+            border: 1px solid #3f3f46;
+            border-radius: 12px;
+            padding: 8px 12px;
+        }
+        .input-box span {
+            color: #a1a1aa;
+            font-weight: 600;
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        .input-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            outline: none;
+        }
+        .btn-inc {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #3f3f46;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 6px;
+            transition: transform 0.1s;
+        }
+        .btn-inc:active { transform: scale(0.95); }
+        .resultados {
+            background-color: #121212;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .resultados div {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #f4f4f5;
+            margin-bottom: 8px;
+        }
+        .resultados div:last-child { margin-bottom: 0; }
+        .acciones-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .btn-accion {
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.1s;
+        }
+        .btn-accion:active { transform: scale(0.95); }
+        .btn-whatsapp {
+            background-color: #facc15;
+            color: #000000;
+            box-shadow: 0 4px 12px rgba(250,204,21,0.3);
+        }
+        .btn-reset {
+            background-color: #27272a;
+            color: #d4d4d8;
+            border: 1px solid #3f3f46;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-start p-4">
-    <div class="w-full max-w-md bg-[#1e1e1e] border border-zinc-800 rounded-2xl p-5 shadow-2xl space-y-5">
-        <h1 class="text-xl font-bold tracking-wide text-center">Calculadora de Financiación</h1>
+<body>
+    <div class="container">
+        <h1>Calculadora de Financiación</h1>
         
         <!-- Frecuencia -->
-        <div class="space-y-2">
-            <label class="text-xs font-semibold tracking-wider text-zinc-400">FRECUENCIA</label>
-            <div class="grid grid-cols-2 gap-2">
-                <button id="btnSemanas" onclick="setFrecuencia('semanas')" class="py-3 px-4 rounded-xl font-bold transition-all text-black bg-[#facc15] shadow-md">Semanas</button>
-                <button id="btnMeses" onclick="setFrecuencia('meses')" class="py-3 px-4 rounded-xl font-bold transition-all text-zinc-300 bg-[#2d2d2d] border border-zinc-700">Meses</button>
+        <div class="grupo">
+            <label>FRECUENCIA</label>
+            <div class="frecuencia-grid">
+                <button id="btnSemanas" onclick="setFrecuencia('semanas')" class="btn-freq active">Semanas</button>
+                <button id="btnMeses" onclick="setFrecuencia('meses')" class="btn-freq">Meses</button>
             </div>
         </div>
 
         <!-- Importe -->
-        <div class="space-y-1">
-            <label class="text-xs font-semibold tracking-wider text-zinc-400">IMPORTE*</label>
-            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
-                <span class="text-zinc-400 mr-2 font-medium">$</span>
-                <input type="text" id="importe" class="w-full bg-transparent text-white font-bold text-lg outline-none" value="2.300.000" oninput="formatInputImporte(this)">
-                <button onclick="modificarValor('importe', -100000)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
-                <button onclick="modificarValor('importe', 100000)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+        <div class="grupo">
+            <label>IMPORTE*</label>
+            <div class="input-box">
+                <span>$</span>
+                <input type="text" id="importe" value="2.300.000" oninput="formatInputImporte(this)">
+                <button onclick="modificarValor('importe', -100000)" class="btn-inc">−</button>
+                <button onclick="modificarValor('importe', 100000)" class="btn-inc">+</button>
             </div>
         </div>
 
         <!-- Tasa -->
-        <div class="space-y-1">
-            <label id="labelTasa" class="text-xs font-semibold tracking-wider text-zinc-400">TASA SEMANAL</label>
-            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
-                <span class="text-zinc-400 mr-2 font-medium">%</span>
-                <input type="number" step="0.1" id="tasa" class="w-full bg-transparent text-white font-bold text-lg outline-none" value="1.9" oninput="calcular()">
-                <button onclick="modificarValor('tasa', -0.1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
-                <button onclick="modificarValor('tasa', 0.1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+        <div class="grupo">
+            <label id="labelTasa">TASA SEMANAL</label>
+            <div class="input-box">
+                <span>%</span>
+                <input type="number" step="0.1" id="tasa" value="1.9" oninput="calcular()">
+                <button onclick="modificarValor('tasa', -0.1)" class="btn-inc">−</button>
+                <button onclick="modificarValor('tasa', 0.1)" class="btn-inc">+</button>
             </div>
         </div>
 
         <!-- Principio Plan -->
-        <div class="space-y-1">
-            <label id="labelPrincipio" class="text-xs font-semibold tracking-wider text-zinc-400">PRINCIPIO PLAN*</label>
-            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
-                <input type="number" id="principio" class="w-full bg-transparent text-white font-bold text-lg outline-none px-2" value="40" oninput="calcular()">
-                <button onclick="modificarValor('principio', -1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
-                <button onclick="modificarValor('principio', 1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+        <div class="grupo">
+            <label id="labelPrincipio">PRINCIPIO PLAN*</label>
+            <div class="input-box">
+                <input type="number" id="principio" value="40" oninput="calcular()" style="margin-left: 0;">
+                <button onclick="modificarValor('principio', -1)" class="btn-inc">−</button>
+                <button onclick="modificarValor('principio', 1)" class="btn-inc">+</button>
             </div>
         </div>
 
         <!-- Intervalo -->
-        <div class="space-y-1">
-            <label class="text-xs font-semibold tracking-wider text-zinc-400">INTERVALO*</label>
-            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
-                <input type="number" id="intervalo" class="w-full bg-transparent text-white font-bold text-lg outline-none px-2" value="4" oninput="calcular()">
-                <button onclick="modificarValor('intervalo', -1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
-                <button onclick="modificarValor('intervalo', 1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+        <div class="grupo">
+            <label>INTERVALO*</label>
+            <div class="input-box">
+                <input type="number" id="intervalo" value="4" oninput="calcular()" style="margin-left: 0;">
+                <button onclick="modificarValor('intervalo', -1)" class="btn-inc">−</button>
+                <button onclick="modificarValor('intervalo', 1)" class="btn-inc">+</button>
             </div>
         </div>
 
         <!-- Resultados -->
-        <div class="bg-[#121212] border border-zinc-800 rounded-xl p-4 space-y-3">
-            <div id="resP1" class="text-sm font-medium text-zinc-200">P1 — 40 Semanas x $0</div>
-            <div id="resP2" class="text-sm font-medium text-zinc-200">P2 — 44 Semanas x $0</div>
-            <div id="resP3" class="text-sm font-medium text-zinc-200">P3 — 48 Semanas x $0</div>
+        <div class="resultados">
+            <div id="resP1">P1 — 40 Semanas x $0</div>
+            <div id="resP2">P2 — 44 Semanas x $0</div>
+            <div id="resP3">P3 — 48 Semanas x $0</div>
         </div>
 
         <!-- Botones de Acción -->
-        <div class="grid grid-cols-2 gap-3 pt-2">
-            <button onclick="copiarWhatsApp()" class="py-3 px-4 bg-[#facc15] text-black font-bold rounded-xl text-sm shadow-lg active:scale-95 transition-all">Copiar WhatsApp</button>
-            <button onclick="restaurarValores()" class="py-3 px-4 bg-[#2d2d2d] border border-zinc-700 text-zinc-300 font-bold rounded-xl text-sm active:scale-95 transition-all">Restablecer</button>
+        <div class="acciones-grid">
+            <button onclick="copiarWhatsApp()" class="btn-accion btn-whatsapp">Copiar WhatsApp</button>
+            <button onclick="restaurarValores()" class="btn-accion btn-reset">Restablecer</button>
         </div>
     </div>
 
@@ -90,12 +227,12 @@
             const labelTasa = document.getElementById('labelTasa');
 
             if (tipo === 'semanas') {
-                btnSemanas.className = "py-3 px-4 rounded-xl font-bold transition-all text-black bg-[#facc15] shadow-md";
-                btnMeses.className = "py-3 px-4 rounded-xl font-bold transition-all text-zinc-300 bg-[#2d2d2d] border border-zinc-700";
+                btnSemanas.classList.add('active');
+                btnMeses.classList.remove('active');
                 labelTasa.innerText = "TASA SEMANAL";
             } else {
-                btnMeses.className = "py-3 px-4 rounded-xl font-bold transition-all text-black bg-[#facc15] shadow-md";
-                btnSemanas.className = "py-3 px-4 rounded-xl font-bold transition-all text-zinc-300 bg-[#2d2d2d] border border-zinc-700";
+                btnMeses.classList.add('active');
+                btnSemanas.classList.remove('active');
                 labelTasa.innerText = "TASA MENSUAL";
             }
             calcular();
