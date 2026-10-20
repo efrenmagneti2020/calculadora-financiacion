@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#121212">
+    <title>Calculadora de Financiación</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <script src="https://cdn.jsdelivr.com/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { background-color: #121212; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4">
+    <div class="w-full max-w-md bg-[#1e1e1e] border border-zinc-800 rounded-2xl p-5 shadow-2xl space-y-5">
+        <h1 class="text-xl font-bold tracking-wide text-center">Calculadora de Financiación</h1>
+        
+        <!-- Frecuencia -->
+        <div class="space-y-2">
+            <label class="text-xs font-semibold tracking-wider text-zinc-400">FRECUENCIA</label>
+            <div class="grid grid-cols-2 gap-2">
+                <button id="btnSemanas" onclick="setFrecuencia('semanas')" class="py-3 px-4 rounded-xl font-bold transition-all text-black bg-[#facc15] shadow-md">Semanas</button>
+                <button id="btnMeses" onclick="setFrecuencia('meses')" class="py-3 px-4 rounded-xl font-bold transition-all text-zinc-300 bg-[#2d2d2d] border border-zinc-700">Meses</button>
+            </div>
+        </div>
+
+        <!-- Importe -->
+        <div class="space-y-1">
+            <label class="text-xs font-semibold tracking-wider text-zinc-400">IMPORTE*</label>
+            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
+                <span class="text-zinc-400 mr-2 font-medium">$</span>
+                <input type="text" id="importe" class="w-full bg-transparent text-white font-bold text-lg outline-none" value="2.300.000" oninput="formatInputImporte(this)">
+                <button onclick="modificarValor('importe', -100000)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
+                <button onclick="modificarValor('importe', 100000)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+            </div>
+        </div>
+
+        <!-- Tasa -->
+        <div class="space-y-1">
+            <label id="labelTasa" class="text-xs font-semibold tracking-wider text-zinc-400">TASA SEMANAL</label>
+            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
+                <span class="text-zinc-400 mr-2 font-medium">%</span>
+                <input type="number" step="0.1" id="tasa" class="w-full bg-transparent text-white font-bold text-lg outline-none" value="1.9" oninput="calcular()">
+                <button onclick="modificarValor('tasa', -0.1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
+                <button onclick="modificarValor('tasa', 0.1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+            </div>
+        </div>
+
+        <!-- Principio Plan -->
+        <div class="space-y-1">
+            <label id="labelPrincipio" class="text-xs font-semibold tracking-wider text-zinc-400">PRINCIPIO PLAN*</label>
+            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
+                <input type="number" id="principio" class="w-full bg-transparent text-white font-bold text-lg outline-none px-2" value="40" oninput="calcular()">
+                <button onclick="modificarValor('principio', -1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
+                <button onclick="modificarValor('principio', 1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+            </div>
+        </div>
+
+        <!-- Intervalo -->
+        <div class="space-y-1">
+            <label class="text-xs font-semibold tracking-wider text-zinc-400">INTERVALO*</label>
+            <div class="flex items-center bg-[#2d2d2d] border border-zinc-700 rounded-xl px-3 py-2">
+                <input type="number" id="intervalo" class="w-full bg-transparent text-white font-bold text-lg outline-none px-2" value="4" oninput="calcular()">
+                <button onclick="modificarValor('intervalo', -1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">−</button>
+                <button onclick="modificarValor('intervalo', 1)" class="w-9 h-9 flex items-center justify-center bg-[#3a3a3a] text-zinc-300 rounded-lg text-lg font-bold ml-1 active:scale-95">+</button>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="bg-[#121212] border border-zinc-800 rounded-xl p-4 space-y-3">
+            <div id="resP1" class="text-sm font-medium text-zinc-200">P1 — 40 Semanas x $0</div>
+            <div id="resP2" class="text-sm font-medium text-zinc-200">P2 — 44 Semanas x $0</div>
+            <div id="resP3" class="text-sm font-medium text-zinc-200">P3 — 48 Semanas x $0</div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="grid grid-cols-2 gap-3 pt-2">
+            <button onclick="copiarWhatsApp()" class="py-3 px-4 bg-[#facc15] text-black font-bold rounded-xl text-sm shadow-lg active:scale-95 transition-all">Copiar WhatsApp</button>
+            <button onclick="restaurarValores()" class="py-3 px-4 bg-[#2d2d2d] border border-zinc-700 text-zinc-300 font-bold rounded-xl text-sm active:scale-95 transition-all">Restablecer</button>
+        </div>
+    </div>
+
+    <script>
+        let frecuenciaActual = 'semanas';
+
+        function setFrecuencia(tipo) {
+            frecuenciaActual = tipo;
+            const btnSemanas = document.getElementById('btnSemanas');
+            const btnMeses = document.getElementById('btnMeses');
+            const labelTasa = document.getElementById('labelTasa');
+
+            if (tipo === 'semanas') {
+                btnSemanas.className = "py-3 px-4 rounded-xl font-bold transition-all text-black bg-[#facc15] shadow-md";
+                btnMeses.className = "py-3 px-4 rounded-xl font-bold transition-all text-zinc-300 bg-[#2d2d2d] border border-zinc-700";
+                labelTasa.innerText = "TASA SEMANAL";
+            } else {
+                btnMeses.className = "py-3 px-4 rounded-xl font-bold transition-all text-black bg-[#facc15] shadow-md";
+                btnSemanas.className = "py-3 px-4 rounded-xl font-bold transition-all text-zinc-300 bg-[#2d2d2d] border border-zinc-700";
+                labelTasa.innerText = "TASA MENSUAL";
+            }
+            calcular();
+        }
+
+        function formatInputImporte(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val !== '') {
+                input.value = Number(val).toLocaleString('es-AR');
+            }
+            calcular();
+        }
+
+        function getImporteNum() {
+            let val = document.getElementById('importe').value.replace(/\./g, '').replace(/,/g, '');
+            return Number(val) || 0;
+        }
+
+        function modificarValor(campo, delta) {
+            if (campo === 'importe') {
+                let actual = getImporteNum() + delta;
+                if (actual < 0) actual = 0;
+                document.getElementById('importe').value = actual.toLocaleString('es-AR');
+                calcular();
+            } else {
+                let elem = document.getElementById(campo);
+                let val = parseFloat(elem.value) || 0;
+                val += delta;
+                if (val < 0) val = 0;
+                elem.value = Number.isInteger(delta) ? Math.round(val) : parseFloat(val.toFixed(2));
+                calcular();
+            }
+        }
+
+        function calcular() {
+            const capital = getImporteNum();
+            const tasaInput = parseFloat(document.getElementById('tasa').value) || 0;
+            const principio = parseInt(document.getElementById('principio').value) || 0;
+            const intervalo = parseInt(document.getElementById('intervalo').value) || 0;
+
+            const tasaEfectiva = frecuenciaActual === 'semanas' ? tasaInput : tasaInput * 4;
+
+            const c1 = principio;
+            const c2 = principio + intervalo;
+            const c3 = principio + (intervalo * 2);
+
+            function calcularPlan(cuotas) {
+                if (capital <= 0 || cuotas <= 0) return { cuotas: 0, valorCuota: 0, total: 0 };
+                let interesTotal = capital * (tasaEfectiva / 100) * cuotas;
+                let totalDevolver = capital + interesTotal;
+                let valorCuota = totalDevolver / cuotas;
+                return { cuotas, valorCuota, total: totalDevolver };
+            }
+
+            const p1 = calcularPlan(c1);
+            const p2 = calcularPlan(c2);
+            const p3 = calcularPlan(c3);
+
+            const textoFreq = frecuenciaActual === 'semanas' ? 'Semanas' : 'Meses';
+
+            document.getElementById('resP1').innerText = `P1 — ${p1.cuotas} ${textoFreq} x $${Math.round(p1.valorCuota).toLocaleString('es-AR')}`;
+            document.getElementById('resP2').innerText = `P2 — ${p2.cuotas} ${textoFreq} x $${Math.round(p2.valorCuota).toLocaleString('es-AR')}`;
+            document.getElementById('resP3').innerText = `P3 — ${p3.cuotas} ${textoFreq} x $${Math.round(p3.valorCuota).toLocaleString('es-AR')}`;
+            
+            guardarMemoria();
+        }
+
+        function guardarMemoria() {
+            const datos = {
+                frecuencia: frecuenciaActual,
+                importe: document.getElementById('importe').value,
+                tasa: document.getElementById('tasa').value,
+                principio: document.getElementById('principio').value,
+                intervalo: document.getElementById('intervalo').value
+            };
+            localStorage.setItem('calc_financiacion_data', JSON.stringify(datos));
+        }
+
+        function cargarMemoria() {
+            const guardado = localStorage.getItem('calc_financiacion_data');
+            if (guardado) {
+                try {
+                    const datos = JSON.parse(guardado);
+                    if (datos.frecuencia) setFrecuencia(datos.frecuencia);
+                    if (datos.importe) document.getElementById('importe').value = datos.importe;
+                    if (datos.tasa) document.getElementById('tasa').value = datos.tasa;
+                    if (datos.principio) document.getElementById('principio').value = datos.principio;
+                    if (datos.intervalo) document.getElementById('intervalo').value = datos.intervalo;
+                } catch(e) {}
+            }
+            calcular();
+        }
+
+        function restaurarValores() {
+            setFrecuencia('semanas');
+            document.getElementById('importe').value = "2.300.000";
+            document.getElementById('tasa').value = "1.9";
+            document.getElementById('principio').value = "40";
+            document.getElementById('intervalo').value = "4";
+            calcular();
+        }
+
+        function copiarWhatsApp() {
+            const textoFreq = frecuenciaActual === 'semanas' ? 'semanales' : 'mensuales';
+            const r1 = document.getElementById('resP1').innerText;
+            const r2 = document.getElementById('resP2').innerText;
+            const r3 = document.getElementById('resP3').innerText;
+
+            const mensaje = `FINANCIACIÓN\n*P1:* ${r1.split('— ')[1]} ${textoFreq}\n*P2:* ${r2.split('— ')[1]} ${textoFreq}\n*P3:* ${r3.split('— ')[1]} ${textoFreq}`;
+
+            navigator.clipboard.writeText(mensaje).then(() => {
+                alert("¡Planes copiados al portapapeles listos para WhatsApp!");
+            });
+        }
+
+        window.onload = cargarMemoria;
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
