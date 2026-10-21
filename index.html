@@ -220,20 +220,30 @@
     <script>
         let frecuenciaActual = 'semanas';
 
-        function setFrecuencia(tipo) {
+        function setFrecuencia(tipo, cargarDefault = true) {
             frecuenciaActual = tipo;
             const btnSemanas = document.getElementById('btnSemanas');
             const btnMeses = document.getElementById('btnMeses');
             const labelTasa = document.getElementById('labelTasa');
+            const tasaInput = document.getElementById('tasa');
+            const principioInput = document.getElementById('principio');
 
             if (tipo === 'semanas') {
                 btnSemanas.classList.add('active');
                 btnMeses.classList.remove('active');
                 labelTasa.innerText = "TASA SEMANAL";
+                if (cargarDefault) {
+                    tasaInput.value = "1.9";
+                    principioInput.value = "40";
+                }
             } else {
                 btnMeses.classList.add('active');
                 btnSemanas.classList.remove('active');
                 labelTasa.innerText = "TASA MENSUAL";
+                if (cargarDefault) {
+                    tasaInput.value = "8";
+                    principioInput.value = "2";
+                }
             }
             calcular();
         }
@@ -273,7 +283,8 @@
             const principio = parseInt(document.getElementById('principio').value) || 0;
             const intervalo = parseInt(document.getElementById('intervalo').value) || 0;
 
-            const tasaEfectiva = frecuenciaActual === 'semanas' ? tasaInput : tasaInput * 4;
+            // FÓRMULA ESTRICTA: Semanal multiplica por 4 la ingresada (convención comercial), Mensual toma la tasa directa sin tocar.
+            const tasaEfectiva = frecuenciaActual === 'semanas' ? tasaInput * 4 : tasaInput;
 
             const c1 = principio;
             const c2 = principio + intervalo;
@@ -316,7 +327,9 @@
             if (guardado) {
                 try {
                     const datos = JSON.parse(guardado);
-                    if (datos.frecuencia) setFrecuencia(datos.frecuencia);
+                    if (datos.frecuencia) {
+                        setFrecuencia(datos.frecuencia, false); // Carga sin pisar valores por defecto la primera vez
+                    }
                     if (datos.importe) document.getElementById('importe').value = datos.importe;
                     if (datos.tasa) document.getElementById('tasa').value = datos.tasa;
                     if (datos.principio) document.getElementById('principio').value = datos.principio;
@@ -327,10 +340,8 @@
         }
 
         function restaurarValores() {
-            setFrecuencia('semanas');
+            setFrecuencia('semanas', true);
             document.getElementById('importe').value = "2.300.000";
-            document.getElementById('tasa').value = "1.9";
-            document.getElementById('principio').value = "40";
             document.getElementById('intervalo').value = "4";
             calcular();
         }
@@ -349,6 +360,10 @@
         }
 
         window.onload = cargarMemoria;
+
+        // Sobrescribir el evento del botón de frecuencia para que cargue los valores por defecto al cambiar
+        document.getElementById('btnSemanas').onclick = () => setFrecuencia('semanas', true);
+        document.getElementById('btnMeses').onclick = () => setFrecuencia('meses', true);
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
