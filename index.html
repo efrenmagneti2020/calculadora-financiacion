@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#121212">
-    <title>Calculadora de Financiación</title>
+    <meta name="theme-color" content="#09090b">
+    <title>Calculadora Profesional de Financiación</title>
     <link rel="manifest" href="manifest.webmanifest">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #121212;
-            color: #ffffff;
+            background-color: #09090b;
+            color: #f4f4f5;
             font-family: system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -18,334 +18,361 @@
             align-items: flex-start;
             padding: 16px;
         }
-        .container {
+        .app-container {
             width: 100%;
             max-width: 440px;
-            background-color: #1e1e1e;
-            border: 1px solid #2d2d2d;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background-color: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
         }
         h1 {
-            font-size: 1.25rem;
-            font-weight: bold;
+            font-size: 1.15rem;
+            font-weight: 800;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             letter-spacing: 0.5px;
+            color: #ffffff;
+            text-transform: uppercase;
         }
-        .grupo {
-            margin-bottom: 16px;
+        .field-group {
+            margin-bottom: 18px;
         }
         label {
             display: block;
-            font-size: 0.75rem;
-            font-weight: bold;
-            letter-spacing: 1px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
             color: #a1a1aa;
             margin-bottom: 6px;
+            text-transform: uppercase;
         }
-        .frecuencia-grid {
+        .freq-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
         }
         .btn-freq {
-            padding: 12px;
-            font-weight: bold;
+            padding: 14px;
+            font-weight: 700;
             border-radius: 12px;
-            border: 1px solid #3f3f46;
+            border: 1px solid #27272a;
             background-color: #27272a;
-            color: #d4d4d8;
+            color: #a1a1aa;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
         }
         .btn-freq.active {
-            background-color: #facc15;
+            background-color: #10b981;
             color: #000000;
-            border-color: #facc15;
-            box-shadow: 0 4px 12px rgba(250,204,21,0.3);
+            border-color: #10b981;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
         }
-        .input-box {
+        .input-wrapper {
             display: flex;
             align-items: center;
             background-color: #27272a;
             border: 1px solid #3f3f46;
             border-radius: 12px;
-            padding: 8px 12px;
+            padding: 6px 12px;
+            transition: border-color 0.2s;
         }
-        .input-box span {
-            color: #a1a1aa;
-            font-weight: 600;
+        .input-wrapper:focus-within {
+            border-color: #10b981;
+        }
+        .input-wrapper span {
+            color: #71717a;
+            font-weight: 700;
             margin-right: 8px;
             font-size: 1.1rem;
         }
-        .input-box input {
+        .input-wrapper input {
             width: 100%;
             background: transparent;
             border: none;
             color: #ffffff;
             font-size: 1.1rem;
-            font-weight: bold;
+            font-weight: 700;
             outline: none;
         }
-        .btn-inc {
-            width: 36px;
-            height: 36px;
+        .btn-step {
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: #3f3f46;
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            font-size: 1.2rem;
+            border-radius: 10px;
+            font-size: 1.25rem;
             font-weight: bold;
             cursor: pointer;
             margin-left: 6px;
-            transition: transform 0.1s;
+            transition: background-color 0.1s, transform 0.1s;
         }
-        .btn-inc:active { transform: scale(0.95); }
-        .resultados {
-            background-color: #121212;
+        .btn-step:active { transform: scale(0.95); background-color: #52525b; }
+        .results-box {
+            background-color: #09090b;
             border: 1px solid #27272a;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 16px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-top: 22px;
+            margin-bottom: 22px;
         }
-        .resultados div {
+        .results-box div {
             font-size: 0.95rem;
-            font-weight: 500;
-            color: #f4f4f5;
-            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e4e4e7;
+            margin-bottom: 10px;
         }
-        .resultados div:last-child { margin-bottom: 0; }
-        .acciones-grid {
+        .results-box div:last-child { margin-bottom: 0; }
+        .actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-        .btn-accion {
-            padding: 12px;
-            font-weight: bold;
+        .btn-action {
+            padding: 14px;
+            font-weight: 700;
             border-radius: 12px;
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
-            transition: transform 0.1s;
+            transition: opacity 0.1s, transform 0.1s;
         }
-        .btn-accion:active { transform: scale(0.95); }
+        .btn-action:active { transform: scale(0.95); opacity: 0.9; }
         .btn-whatsapp {
-            background-color: #facc15;
+            background-color: #10b981;
             color: #000000;
-            box-shadow: 0 4px 12px rgba(250,204,21,0.3);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
         }
         .btn-reset {
             background-color: #27272a;
-            color: #d4d4d8;
+            color: #a1a1aa;
             border: 1px solid #3f3f46;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <h1>Calculadora de Financiación</h1>
         
         <!-- Frecuencia -->
-        <div class="grupo">
-            <label>FRECUENCIA</label>
-            <div class="frecuencia-grid">
-                <button id="btnSemanas" onclick="setFrecuencia('semanas')" class="btn-freq active">Semanas</button>
-                <button id="btnMeses" onclick="setFrecuencia('meses')" class="btn-freq">Meses</button>
+        <div class="field-group">
+            <label>Modalidad de Venta</label>
+            <div class="freq-grid">
+                <button id="btnSemanas" onclick="cambiarFrecuencia('semanas')" class="btn-freq active">Semanal</button>
+                <button id="btnMeses" onclick="cambiarFrecuencia('meses')" class="btn-freq">Mensual</button>
             </div>
         </div>
 
         <!-- Importe -->
-        <div class="grupo">
-            <label>IMPORTE*</label>
-            <div class="input-box">
+        <div class="field-group">
+            <label>Monto a Financiar</label>
+            <div class="input-wrapper">
                 <span>$</span>
-                <input type="text" id="importe" value="2.300.000" oninput="formatInputImporte(this)">
-                <button onclick="modificarValor('importe', -100000)" class="btn-inc">−</button>
-                <button onclick="modificarValor('importe', 100000)" class="btn-inc">+</button>
+                <input type="text" id="importe" value="2.300.000" oninput="formatearImporte(this)">
+                <button onclick="modificar('importe', -100000)" class="btn-step">−</button>
+                <button onclick="modificar('importe', 100000)" class="btn-step">+</button>
             </div>
         </div>
 
         <!-- Tasa -->
-        <div class="grupo">
-            <label id="labelTasa">TASA SEMANAL</label>
-            <div class="input-box">
+        <div class="field-group">
+            <label id="lblTasa">Tasa de Interés Semanal</label>
+            <div class="input-wrapper">
                 <span>%</span>
-                <input type="number" step="0.1" id="tasa" value="1.9" oninput="calcular()">
-                <button onclick="modificarValor('tasa', -0.1)" class="btn-inc">−</button>
-                <button onclick="modificarValor('tasa', 0.1)" class="btn-inc">+</button>
+                <input type="number" step="0.1" id="tasa" value="1.9" oninput="calcularPlans()">
+                <button onclick="modificar('tasa', -0.1)" class="btn-step">−</button>
+                <button onclick="modificar('tasa', 0.1)" class="btn-step">+</button>
             </div>
         </div>
 
         <!-- Principio Plan -->
-        <div class="grupo">
-            <label id="labelPrincipio">PRINCIPIO PLAN*</label>
-            <div class="input-box">
-                <input type="number" id="principio" value="40" oninput="calcular()" style="margin-left: 0;">
-                <button onclick="modificarValor('principio', -1)" class="btn-inc">−</button>
-                <button onclick="modificarValor('principio', 1)" class="btn-inc">+</button>
+        <div class="field-group">
+            <label id="lblPrincipio">Cuotas Base (Plan 1)</label>
+            <div class="input-wrapper">
+                <input type="number" id="principio" value="40" oninput="calcularPlans()" style="margin-left: 0;">
+                <button onclick="modificar('principio', -1)" class="btn-step">−</button>
+                <button onclick="modificar('principio', 1)" class="btn-step">+</button>
             </div>
         </div>
 
         <!-- Intervalo -->
-        <div class="grupo">
-            <label>INTERVALO*</label>
-            <div class="input-box">
-                <input type="number" id="intervalo" value="4" oninput="calcular()" style="margin-left: 0;">
-                <button onclick="modificarValor('intervalo', -1)" class="btn-inc">−</button>
-                <button onclick="modificarValor('intervalo', 1)" class="btn-inc">+</button>
+        <div class="field-group">
+            <label id="lblIntervalo">Intervalo entre Planes</label>
+            <div class="input-wrapper">
+                <input type="number" id="intervalo" value="4" oninput="calcularPlans()" style="margin-left: 0;">
+                <button onclick="modificar('intervalo', -1)" class="btn-step">−</button>
+                <button onclick="modificar('intervalo', 1)" class="btn-step">+</button>
             </div>
         </div>
 
         <!-- Resultados -->
-        <div class="resultados">
+        <div class="results-box">
             <div id="resP1">P1 — 40 Semanas x $0</div>
             <div id="resP2">P2 — 44 Semanas x $0</div>
             <div id="resP3">P3 — 48 Semanas x $0</div>
         </div>
 
         <!-- Botones de Acción -->
-        <div class="acciones-grid">
-            <button onclick="copiarWhatsApp()" class="btn-accion btn-whatsapp">Copiar WhatsApp</button>
-            <button onclick="restaurarValores()" class="btn-accion btn-reset">Restablecer</button>
+        <div class="actions-grid">
+            <button onclick="copiarWhatsApp()" class="btn-action btn-whatsapp">Copiar WhatsApp</button>
+            <button onclick="restaurarConfig()" class="btn-action btn-reset">Restablecer</button>
         </div>
     </div>
 
     <script>
-        let frecuenciaActual = 'semanas';
+        let modoActual = 'semanas';
 
-        function setFrecuencia(tipo) {
-            frecuenciaActual = tipo;
-            const btnSemanas = document.getElementById('btnSemanas');
-            const btnMeses = document.getElementById('btnMeses');
-            const labelTasa = document.getElementById('labelTasa');
+        function cambiarFrecuencia(tipo) {
+            modoActual = tipo;
+            const btnSem = document.getElementById('btnSemanas');
+            const btnMes = document.getElementById('btnMeses');
+            const lblTasa = document.getElementById('lblTasa');
+            const lblPrin = document.getElementById('lblPrincipio');
+            const lblInter = document.getElementById('lblIntervalo');
+            const inputTasa = document.getElementById('tasa');
+            const inputPrin = document.getElementById('principio');
 
             if (tipo === 'semanas') {
-                btnSemanas.classList.add('active');
-                btnMeses.classList.remove('active');
-                labelTasa.innerText = "TASA SEMANAL";
+                btnSem.classList.add('active');
+                btnMes.classList.remove('active');
+                lblTasa.innerText = "Tasa de Interés Semanal";
+                lblPrin.innerText = "Semanas Base (Plan 1)";
+                lblInter.innerText = "Intervalo en Semanas";
+                inputTasa.value = "1.9";
+                inputPrin.value = "40";
             } else {
-                btnMeses.classList.add('active');
-                btnSemanas.classList.remove('active');
-                labelTasa.innerText = "TASA MENSUAL";
+                btnMes.classList.add('active');
+                btnSem.classList.remove('active');
+                lblTasa.innerText = "Tasa de Interés Mensual";
+                lblPrin.innerText = "Meses Base (Plan 1)";
+                lblInter.innerText = "Intervalo en Meses";
+                inputTasa.value = "7.6";
+                inputPrin.value = "10";
             }
-            calcular();
+            calcularPlans();
         }
 
-        function formatInputImporte(input) {
-            let val = input.value.replace(/\D/g, '');
-            if (val !== '') {
-                input.value = Number(val).toLocaleString('es-AR');
+        function formatearImporte(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v !== '') {
+                input.value = Number(v).toLocaleString('es-AR');
             }
-            calcular();
+            calcularPlans();
         }
 
-        function getImporteNum() {
-            let val = document.getElementById('importe').value.replace(/\./g, '').replace(/,/g, '');
-            return Number(val) || 0;
+        function obtenerCapital() {
+            let v = document.getElementById('importe').value.replace(/\./g, '').replace(/,/g, '');
+            return Number(v) || 0;
         }
 
-        function modificarValor(campo, delta) {
+        function modificar(campo, delta) {
             if (campo === 'importe') {
-                let actual = getImporteNum() + delta;
+                let actual = obtenerCapital() + delta;
                 if (actual < 0) actual = 0;
                 document.getElementById('importe').value = actual.toLocaleString('es-AR');
-                calcular();
+                calcularPlans();
             } else {
-                let elem = document.getElementById(campo);
-                let val = parseFloat(elem.value) || 0;
+                let el = document.getElementById(campo);
+                let val = parseFloat(el.value) || 0;
                 val += delta;
                 if (val < 0) val = 0;
-                elem.value = Number.isInteger(delta) ? Math.round(val) : parseFloat(val.toFixed(2));
-                calcular();
+                el.value = Number.isInteger(delta) ? Math.round(val) : parseFloat(val.toFixed(2));
+                calcularPlans();
             }
         }
 
-        function calcular() {
-            const capital = getImporteNum();
-            const tasaInput = parseFloat(document.getElementById('tasa').value) || 0;
+        function calcularPlans() {
+            const capital = obtenerCapital();
+            const tasa = parseFloat(document.getElementById('tasa').value) || 0;
             const principio = parseInt(document.getElementById('principio').value) || 0;
             const intervalo = parseInt(document.getElementById('intervalo').value) || 0;
 
-            // Si es semanas, multiplica por 4 como convención comercial; si es meses, toma la tasa mensual directa.
-            const tasaEfectiva = frecuenciaActual === 'semanas' ? tasaInput * 4 : tasaInput;
-
+            // INTERÉS SIMPLE INDEPENDIENTE:
+            // Semanal: capital * (tasa/100) * semanas
+            // Mensual: capital * (tasa/100) * meses
             const c1 = principio;
             const c2 = principio + intervalo;
             const c3 = principio + (intervalo * 2);
 
-            function calcularPlan(cuotas) {
-                if (capital <= 0 || cuotas <= 0) return { cuotas: 0, valorCuota: 0, total: 0 };
-                let interesTotal = capital * (tasaEfectiva / 100) * cuotas;
+            function resolverPlan(plazo) {
+                if (capital <= 0 || plazo <= 0) return { plazo: 0, cuota: 0 };
+                let interesTotal = capital * (tasa / 100) * plazo;
                 let totalDevolver = capital + interesTotal;
-                let valorCuota = totalDevolver / cuotas;
-                return { cuotas, valorCuota, total: totalDevolver };
+                let valorCuota = totalDevolver / plazo;
+                return { plazo, cuota: valorCuota };
             }
 
-            const p1 = calcularPlan(c1);
-            const p2 = calcularPlan(c2);
-            const p3 = calcularPlan(c3);
+            const p1 = resolverPlan(c1);
+            const p2 = resolverPlan(c2);
+            const p3 = resolverPlan(c3);
 
-            const textoFreq = frecuenciaActual === 'semanas' ? 'Semanas' : 'Meses';
+            const unidadTexto = modoActual === 'semanas' ? 'Semanas' : 'Meses';
 
-            document.getElementById('resP1').innerText = `P1 — ${p1.cuotas} ${textoFreq} x $${Math.round(p1.valorCuota).toLocaleString('es-AR')}`;
-            document.getElementById('resP2').innerText = `P2 — ${p2.cuotas} ${textoFreq} x $${Math.round(p2.valorCuota).toLocaleString('es-AR')}`;
-            document.getElementById('resP3').innerText = `P3 — ${p3.cuotas} ${textoFreq} x $${Math.round(p3.valorCuota).toLocaleString('es-AR')}`;
-            
+            document.getElementById('resP1').innerText = `P1 — ${p1.plazo} ${unidadTexto} x $${Math.round(p1.cuota).toLocaleString('es-AR')}`;
+            document.getElementById('resP2').innerText = `P2 — ${p2.plazo} ${unidadTexto} x $${Math.round(p2.cuota).toLocaleString('es-AR')}`;
+            document.getElementById('resP3').innerText = `P3 — ${p3.plazo} ${unidadTexto} x $${Math.round(p3.cuota).toLocaleString('es-AR')}`;
+
             guardarMemoria();
         }
 
         function guardarMemoria() {
-            const datos = {
-                frecuencia: frecuenciaActual,
+            const data = {
+                modo: modoActual,
                 importe: document.getElementById('importe').value,
                 tasa: document.getElementById('tasa').value,
                 principio: document.getElementById('principio').value,
                 intervalo: document.getElementById('intervalo').value
             };
-            localStorage.setItem('calc_financiacion_data', JSON.stringify(datos));
+            localStorage.setItem('calc_pro_data', JSON.stringify(data));
         }
 
         function cargarMemoria() {
-            const guardado = localStorage.getItem('calc_financiacion_data');
-            if (guardado) {
+            const saved = localStorage.getItem('calc_pro_data');
+            if (saved) {
                 try {
-                    const datos = JSON.parse(guardado);
-                    if (datos.frecuencia) setFrecuencia(datos.frecuencia);
-                    if (datos.importe) document.getElementById('importe').value = datos.importe;
-                    if (datos.tasa) document.getElementById('tasa').value = datos.tasa;
-                    if (datos.principio) document.getElementById('principio').value = datos.principio;
-                    if (datos.intervalo) document.getElementById('intervalo').value = datos.intervalo;
+                    const data = JSON.parse(saved);
+                    if (data.modo) {
+                        modoActual = data.modo;
+                        if (modoActual === 'meses') {
+                            document.getElementById('btnMeses').classList.add('active');
+                            document.getElementById('btnSemanas').classList.remove('active');
+                            document.getElementById('lblTasa').innerText = "Tasa de Interés Mensual";
+                            document.getElementById('lblPrincipio').innerText = "Meses Base (Plan 1)";
+                            document.getElementById('lblIntervalo').innerText = "Intervalo en Meses";
+                        }
+                    }
+                    if (data.importe) document.getElementById('importe').value = data.importe;
+                    if (data.tasa) document.getElementById('tasa').value = data.tasa;
+                    if (data.principio) document.getElementById('principio').value = data.principio;
+                    if (data.intervalo) document.getElementById('intervalo').value = data.intervalo;
                 } catch(e) {}
             }
-            calcular();
+            calcularPlans();
         }
 
-        function restaurarValores() {
-            setFrecuencia('semanas');
+        function restaurarConfig() {
+            cambiarFrecuencia('semanas');
             document.getElementById('importe').value = "2.300.000";
-            document.getElementById('tasa').value = "1.9";
-            document.getElementById('principio').value = "40";
             document.getElementById('intervalo').value = "4";
-            calcular();
+            calcularPlans();
         }
 
         function copiarWhatsApp() {
-            const unidad = frecuenciaActual === 'semanas' ? 'Semanas' : 'Meses';
-            const r1 = document.getElementById('resP1').innerText.split('— ')[1].replace(' Semanas', '').replace(' Meses', '');
-            const r2 = document.getElementById('resP2').innerText.split('— ')[1].replace(' Semanas', '').replace(' Meses', '');
-            const r3 = document.getElementById('resP3').innerText.split('— ')[1].replace(' Semanas', '').replace(' Meses', '');
+            const unidad = modoActual === 'semanas' ? 'Semanas' : 'Meses';
+            const r1 = document.getElementById('resP1').innerText.split('— ')[1].replace(` ${unidad}`, '');
+            const r2 = document.getElementById('resP2').innerText.split('— ')[1].replace(` ${unidad}`, '');
+            const r3 = document.getElementById('resP3').innerText.split('— ')[1].replace(` ${unidad}`, '');
 
-            const mensaje = `*_PLANES DE FINANCIACIÓN_*\n*${r1.split(' x ')[0]} ${unidad}* x ${r1.split(' x ')[1]}\n*${r2.split(' x ')[0]} ${unidad}* x ${r2.split(' x ')[1]}\n*${r3.split(' x ')[0]} ${unidad}* x ${r3.split(' x ')[1]}`;
+            const msg = `*_PLANES DE FINANCIACIÓN_*\n*${r1.split(' x ')[0]} ${unidad}* x ${r1.split(' x ')[1]}\n*${r2.split(' x ')[0]} ${unidad}* x ${r2.split(' x ')[1]}\n*${r3.split(' x ')[0]} ${unidad}* x ${r3.split(' x ')[1]}`;
 
-            navigator.clipboard.writeText(mensaje).then(() => {
-                alert("¡Planes copiados al portapapeles listos para WhatsApp!");
+            navigator.clipboard.writeText(msg).then(() => {
+                alert("¡Planes copiados listos para enviar por WhatsApp!");
             });
         }
 
