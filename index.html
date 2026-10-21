@@ -224,16 +224,17 @@
             frecuenciaActual = tipo;
             const btnSemanas = document.getElementById('btnSemanas');
             const btnMeses = document.getElementById('btnMeses');
+            const labelTasa = document.getElementById('labelTasa');
 
             if (tipo === 'semanas') {
                 btnSemanas.classList.add('active');
                 btnMeses.classList.remove('active');
+                labelTasa.innerText = "TASA SEMANAL";
             } else {
                 btnMeses.classList.add('active');
                 btnSemanas.classList.remove('active');
+                labelTasa.innerText = "TASA MENSUAL";
             }
-            // Mantiene siempre el texto como TASA SEMANAL para conservar la lógica que ya te funcionaba
-            document.getElementById('labelTasa').innerText = "TASA SEMANAL";
             calcular();
         }
 
@@ -272,8 +273,8 @@
             const principio = parseInt(document.getElementById('principio').value) || 0;
             const intervalo = parseInt(document.getElementById('intervalo').value) || 0;
 
-            // Conserva exactamente la lógica estable multiplicando por 4
-            const tasaEfectiva = tasaInput * 4;
+            // Si es semanas, multiplica por 4 como convención comercial; si es meses, toma la tasa mensual directa.
+            const tasaEfectiva = frecuenciaActual === 'semanas' ? tasaInput * 4 : tasaInput;
 
             const c1 = principio;
             const c2 = principio + intervalo;
